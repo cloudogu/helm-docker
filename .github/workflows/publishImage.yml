@@ -15,15 +15,17 @@ jobs:
           GHCR_IMAGE=ghcr.io/${{ github.repository_owner }}/helm
           VERSION=latest
 
+          TAGS="${GHCR_IMAGE}:${VERSION}"
+
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
+            TAGS="${TAGS},${GHCR_IMAGE}:${VERSION}"
           fi
 
-          TAG="${GHCR_IMAGE}:${VERSION}"
 
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=ghcr_image::${GHCR_IMAGE}
-          echo ::set-output name=tag::${TAG}
+          echo ::set-output name=tags::${TAGS}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -43,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ steps.prep.outputs.tag }}
+          tags: ${{ steps.prep.outputs.tags }}
       -
         name: Check manifest
         run: |

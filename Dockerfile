@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION=3.12.0
-FROM alpine:${ALPINE_VERSION} as BASE
+FROM alpine:${ALPINE_VERSION} as base
 
-FROM BASE as builder
+FROM base as builder
 ARG HELM_VERSION=v3.3.4
 # Kubeval does not have tags, so we use a commit
 ARG HELM_KUBEVAL_VERSION=7476464
@@ -39,7 +39,7 @@ RUN mv /usr/local/bin/helm /dist/usr/local/bin
 RUN mv ${HOME} /dist/helm 
 
 
-FROM BASE
+FROM base
 # These can be found out via "helm env"
 ENV HELM_CACHE_HOME="/helm/.cache/helm" \
     HELM_CONFIG_HOME="/helm/.config/helm" \

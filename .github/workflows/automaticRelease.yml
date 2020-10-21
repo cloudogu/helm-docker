@@ -1,0 +1,48 @@
+name: Trigger release on new Helm version
+on:
+  schedule:
+    - cron:  '* 0 * * *'
+jobs:
+  check_for_new_helm_version:
+    name: Update on new release
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        run: sudo apt-get install -y jq
+      - 
+        uses: actions/checkout@v2
+      -
+        name: Compare releases
+        id: compare_releases
+        run: |
+          eval $(scripts/checkHelmVersion.sh)
+          echo ::set-output name=triggerNewRelease::${triggerNewRelease}
+          echo ::set-output name=helmRelease::${helmRelease}
+      - 
+        uses: stefanzweifel/git-auto-commit-action@v4
+        if: steps.compare_releases.outputs.triggerNewRelease == 'true'
+        with:
+          commit_message: Updated to latest Helm version v${{ steps.compare_releases.outputs.helmRelease }}
+      -
+        name: Git commit
+        run: |
+          git log -n 1 --pretty=format:"%H"
+      -
+        name: Create release on new Helm version
+        if: steps.compare_releases.outputs.triggerNewRelease == 'true'
+        uses: "actions/create-release@v1"
+        env:
+          GITHUB_TOKEN: ${{ secrets.CR_PAT }}
+        with:
+          tag_name: "${{ steps.compare_releases.outputs.helmRelease }}-1"
+          release_name: "${{ steps.compare_releases.outputs.helmRelease }}-1"
+          body: |
+            The following versions are bundled with this release:
+
+            - [Helm](https://www.helm.sh):${{ steps.compare_releases.outputs.helmRelease }}
+            - [Helm-kubeval](https://github.com/instrumenta/helm-kubeval):0.13.0
+            - [Helm-values](https://github.com/shihyuho/helm-values):1.2.0
+            
+            The image can be pulled with `$ docker pull ghcr.io/cloudogu/helm:${{ steps.compare_releases.outputs.helmRelease }}-1`
+          draft: false
+          prerelease: false       

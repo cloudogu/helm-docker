@@ -12,18 +12,19 @@ jobs:
         name: Prepare
         id: prep
         run: |
-          GHCR_IMAGE=ghcr.io/${{ github.repository_owner }}/helm-plugins-docker
+          GHCR_IMAGE=ghcr.io/${{ github.repository_owner }}/helm
           VERSION=latest
+
+          TAGS="${GHCR_IMAGE}:${VERSION}"
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
+            TAGS="${TAGS},${GHCR_IMAGE}:${VERSION}"
           fi
-
-          TAG="${GHCR_IMAGE}:${VERSION}"
 
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=ghcr_image::${GHCR_IMAGE}
-          echo ::set-output name=tag::${TAG}
+          echo ::set-output name=tags::${TAGS}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -38,12 +39,25 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       -
+        name: Update git repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - 
+        run: git checkout HEAD^
+      -
+        name: Check latest git commit
+        run: |
+          git log -n 1 --pretty=format:"%H"
+      -
         name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
+          context: .
+          file: ./Dockerfile
           push: true
-          tags: ${{ steps.prep.outputs.tag }}
+          tags: ${{ steps.prep.outputs.tags }}
       -
         name: Check manifest
         run: |

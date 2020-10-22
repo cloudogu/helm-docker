@@ -32,6 +32,8 @@ jobs:
         if: steps.compare_releases.outputs.triggerNewRelease == 'true'
         uses: "actions/create-release@v1"
         env:
+          # here we are using the CR_PAT token because the generated GITHUB_TOKEN did not trigger 
+          # the publishImage workflow on a new release (https://github.community/t/triggering-a-new-workflow-from-another-workflow/16250)
           GITHUB_TOKEN: ${{ secrets.CR_PAT }}
         with:
           tag_name: "${{ steps.compare_releases.outputs.helmRelease }}-1"

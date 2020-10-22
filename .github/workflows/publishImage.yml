@@ -44,11 +44,8 @@ jobs:
         with:
           fetch-depth: 2
       - 
+        # this is necessary to prevent desynch state when triggered by previous workflow
         run: git checkout HEAD^
-      -
-        name: Check latest git commit
-        run: |
-          git log -n 1 --pretty=format:"%H"
       -
         name: Build and push
         id: docker_build

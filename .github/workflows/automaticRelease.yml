@@ -24,10 +24,6 @@ jobs:
         with:
           commit_message: Updated to latest Helm version v${{ steps.compare_releases.outputs.helmRelease }}
       -
-        name: Git commit
-        run: |
-          git log -n 1 --pretty=format:"%H"
-      -
         name: Create release on new Helm version
         if: steps.compare_releases.outputs.triggerNewRelease == 'true'
         uses: "actions/create-release@v1"

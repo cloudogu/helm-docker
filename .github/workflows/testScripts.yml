@@ -7,13 +7,11 @@ jobs:
     name: Test scripts
     runs-on: ubuntu-latest
     steps:
-      - name: Setup BATS
-        uses: mig4/setup-bats@v1.0.1
-        with:
-          bats-version: 1.2.1
-
-      - name: Check out code
+      - 
+        name: Check out code
         uses: actions/checkout@v1
-
-      - name: Test
-        run: bats -r .
+      - 
+        name: Run Bats Tests
+        uses: ffurrer2/bats-action@v1
+        with:
+          args: ./test/checkHelmVersion.bats

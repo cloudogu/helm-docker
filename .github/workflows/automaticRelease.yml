@@ -1,7 +1,7 @@
 name: Trigger release on new Helm version
 on:
   schedule:
-    - cron:  '* 23 * * *'
+    - cron:  '0 0 * * *'
 jobs:
   check_for_new_helm_version:
     name: Update on new release

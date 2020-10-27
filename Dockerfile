@@ -2,7 +2,7 @@ ARG ALPINE_VERSION=3.12.1
 FROM alpine:${ALPINE_VERSION} as base
 
 FROM base as builder
-ARG HELM_VERSION=v3.3.4
+ARG HELM_VERSION=v3.4.0
 # Kubeval does not have tags, so we use a commit
 ARG HELM_KUBEVAL_VERSION=7476464
 ARG HELM_VALUES_VERSION=1.2.0

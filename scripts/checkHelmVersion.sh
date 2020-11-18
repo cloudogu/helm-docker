@@ -39,7 +39,17 @@ function updateDockerfileOnNewRelease() {
     echo "$triggerNewRelease"
 }
 
+checkForCommands() {
+    if ! command -v $1 &> /dev/null
+then
+    sudo apt install -y "$1"
+fi
+}
+
 run_main() {
+
+    checkForCommands curl
+    checkForCommands jq
 
     if [[ -z "$1" ]]; then
         helmRelease=$(getlatestHelmRelease)

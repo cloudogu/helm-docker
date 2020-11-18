@@ -6,7 +6,7 @@ on:
 jobs:
   push_to_registry:
     name: Push Docker image to GitHub Packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       -
         name: Prepare
@@ -39,12 +39,13 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       -
-        name: Update git repository
+        name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
       - 
         # this is necessary to prevent desynch state when triggered by previous workflow
+        name: Sync git repository
         run: git checkout HEAD^
       -
         name: Build and push

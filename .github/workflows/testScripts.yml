@@ -1,15 +1,22 @@
 name: Test scripts on push
 on:
   push:
-    branch: main
+    branches: 
+      - main
 jobs:
   test_scripts:
     name: Test scripts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - 
-        name: Check out code
-        uses: actions/checkout@v1
+        # this is necessary to prevent desynch state when triggered by previous workflow
+        name: Sync git repository
+        run: git checkout HEAD^
       - 
         name: Run Bats Tests
         uses: ffurrer2/bats-action@v1

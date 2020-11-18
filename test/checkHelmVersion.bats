@@ -5,6 +5,7 @@ script=${COMMAND:-"scripts/checkHelmVersion.sh"}
 setup() {
     source ${script}
     cp ./Dockerfile test/Dockerfile
+    sed -i "/ARG HELM_VERSION=/c\ARG HELM_VERSION=v3.3.4" ./Dockerfile
 }
 
 teardown() {

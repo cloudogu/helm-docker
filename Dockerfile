@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.12.1
+ARG ALPINE_VERSION=3.13.5
 FROM alpine:${ALPINE_VERSION} as base
 
 FROM base as builder

@@ -1,8 +1,8 @@
-ARG ALPINE_VERSION=3.12.1
+ARG ALPINE_VERSION=3.13.5
 FROM alpine:${ALPINE_VERSION} as base
 
 FROM base as builder
-ARG HELM_VERSION=v3.6.0
+ARG HELM_VERSION=3.6.0
 # Kubeval does not have tags, so we use a commit
 ARG HELM_KUBEVAL_VERSION=7476464
 ARG HELM_VALUES_VERSION=1.2.0
@@ -10,9 +10,17 @@ ARG HELM_VALUES_VERSION=1.2.0
 # Make helm install everything in defined folder
 ENV HOME=/helm
 
-RUN apk add --update --no-cache ca-certificates curl git openssl bash
-RUN wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz 
-RUN tar -xf helm-${HELM_VERSION}-linux-amd64.tar.gz 
+RUN apk add --no-cache curl git bash gnupg outils-sha256 
+
+RUN wget -q -O helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz 
+RUN wget -q -O helm.tar.gz.asc https://github.com/helm/helm/releases/download/v${HELM_VERSION}/helm-v${HELM_VERSION}-linux-amd64.tar.gz.asc
+RUN wget -q -O helm.tar.gz.sha256 https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz.sha256 
+RUN tar -xf helm.tar.gz 
+# Without the two spaces the check fails!
+RUN echo "$(cat helm.tar.gz.sha256)  helm.tar.gz" | sha256sum -c
+RUN mkdir -p ${HOME}
+RUN wget -q https://raw.githubusercontent.com/helm/helm/main/KEYS -O- | gpg --import
+RUN gpg --batch --verify helm.tar.gz.asc helm.tar.gz
 RUN mv linux-amd64/helm /usr/local/bin 
 
 # install helm-kubeval via git commit (no tags present)

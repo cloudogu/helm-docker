@@ -8,8 +8,7 @@ jobs:
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-20.04
     steps:
-      -
-        name: Prepare
+      - name: Prepare
         id: prep
         run: |
           GHCR_IMAGE=ghcr.io/${{ github.repository_owner }}/helm
@@ -22,41 +21,39 @@ jobs:
             TAGS="${TAGS},${GHCR_IMAGE}:${VERSION}"
           fi
 
-          echo ::set-output name=version::${VERSION}
-          echo ::set-output name=ghcr_image::${GHCR_IMAGE}
-          echo ::set-output name=tags::${TAGS}
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to GitHub Container Registry
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "GHCR_IMAGE=${GHCR_IMAGE}" >> $GITHUB_ENV
+          echo "TAGS=${TAGS}" >> $GITHUB_ENV
+          
+          echo "IMAGE=ghcr.io/$GITHUB_REPOSITORY" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+          echo "GIT_REF=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)" >> $GITHUB_ENV
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
-      - 
-        # this is necessary to prevent desynch state when triggered by previous workflow
+      - # this is necessary to prevent desynch state when triggered by previous workflow
         name: Sync git repository
         run: git checkout HEAD^
-      -
-        name: Build and push
+      - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.prep.outputs.tags }}
-      -
-        name: Check manifest
+          labels: |
+            org.opencontainers.image.authors=${{ github.repository_owner }}
+            org.opencontainers.image.created=${{ env.BUILD_DATE }}
+            org.opencontainers.image.description=Created from commit ${{ env.GIT_SHA }} and ref ${{ env.GIT_REF }}
+            org.opencontainers.image.ref.name=${{ env.GIT_REF }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          tags: ${{ env.TAGS }}
+      - name: Check manifest
         run: |
-          docker buildx imagetools inspect ${{ steps.prep.outputs.ghcr_image }}:${{ steps.prep.outputs.version }}
+          docker buildx imagetools inspect ${{ env.ghcr_image }}:${{ env.VERSION }}

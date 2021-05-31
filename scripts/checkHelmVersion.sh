@@ -33,7 +33,7 @@ function updateDockerfileOnNewRelease() {
     triggerNewRelease=false
     if [[ $(checkForNewRelease) == 'true' ]]; then
         # changing the helm version in the dockerfile
-        sed -i "/ARG HELM_VERSION=/c\ARG HELM_VERSION=v${helmRelease}" ./Dockerfile
+        sed -i "/ARG HELM_VERSION=/c\ARG HELM_VERSION=${helmRelease}" ./Dockerfile
         triggerNewRelease=true
     fi
     echo "$triggerNewRelease"

@@ -5,7 +5,7 @@ script=${COMMAND:-"scripts/checkHelmVersion.sh"}
 setup() {
     source ${script}
     cp ./Dockerfile test/Dockerfile
-    sed -i "/ARG HELM_VERSION=/c\ARG HELM_VERSION=v3.3.4" ./Dockerfile
+    sed -i "/ARG HELM_VERSION=/c\ARG HELM_VERSION=3.3.4" ./Dockerfile
 }
 
 teardown() {
@@ -42,7 +42,7 @@ teardown() {
 }
 
 function checkDockerfileVersion() {
-    case `grep -Fx "ARG HELM_VERSION=v$1" ./Dockerfile >/dev/null; echo $?` in
+    case `grep -Fx "ARG HELM_VERSION=$1" ./Dockerfile >/dev/null; echo $?` in
   0)
     echo "0"
     ;;

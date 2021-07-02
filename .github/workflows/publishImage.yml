@@ -9,6 +9,17 @@ jobs:
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-20.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2          
+      - # this is necessary to prevent desynch state when triggered by previous workflow
+        name: Sync git repository
+        run: git checkout HEAD^
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Prepare
         id: prep
         run: |
@@ -29,21 +40,13 @@ jobs:
           echo "IMAGE=ghcr.io/$GITHUB_REPOSITORY" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
           echo "GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+          echo "GIT_REF=$(git symbolic-ref -q --short HEAD)" >> $GITHUB_ENV
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 2          
-      - # this is necessary to prevent desynch state when triggered by previous workflow
-        name: Sync git repository
-        run: |
-          git checkout HEAD^
-          echo "GIT_REF=$(git symbolic-ref -q --short HEAD)" >> $GITHUB_ENV
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
@@ -56,3 +59,6 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
           tags: ${{ env.TAGS }}
+      - name: Check manifest
+        run: |
+          docker buildx imagetools inspect ${{ env.GHCR_IMAGE }}:${{ env.VERSION }}

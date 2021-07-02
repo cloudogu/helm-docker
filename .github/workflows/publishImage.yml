@@ -42,6 +42,8 @@ jobs:
       - # this is necessary to prevent desynch state when triggered by previous workflow
         name: Sync git repository
         run: git checkout HEAD^
+      - name: TestRef
+        run: echo ${{ github.ref }}
       - name: Extracting GIT_REF from repository
         run: echo "GIT_REF=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)" >> $GITHUB_ENV
       - name: Build and push

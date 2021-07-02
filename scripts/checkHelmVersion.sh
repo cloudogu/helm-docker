@@ -42,7 +42,7 @@ function updateDockerfileOnNewRelease() {
 checkForCommands() {
     if ! command -v $1 &> /dev/null
 then
-    sudo apt install -y "$1"
+    apt install -y "$1"
 fi
 }
 

@@ -18,7 +18,9 @@ jobs:
           TAGS="${GHCR_IMAGE}:${VERSION}"
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "hello there is a ref"
             VERSION=${GITHUB_REF#refs/tags/}
+            echo "$VERSION"
             TAGS="${TAGS},${GHCR_IMAGE}:${VERSION}"
           fi
 

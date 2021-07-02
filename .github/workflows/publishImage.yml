@@ -56,6 +56,3 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
           tags: ${{ env.TAGS }}
-      - name: Check manifest
-        run: |
-          docker manifest inspect ${{ env.GHCR_IMAGE }}:${{ env.VERSION }}

@@ -1,6 +1,5 @@
 name: Publish Docker image
 on:
-  workflow_dispatch:
   release:
     branch: main
     types: [published]
@@ -36,7 +35,7 @@ jobs:
           echo "IMAGE=ghcr.io/$GITHUB_REPOSITORY" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
           echo "GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
-          echo "GIT_REF=$(git symbolic-ref -q --short HEAD)" >> $GITHUB_ENV
+          echo "GIT_REF=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)" >> $GITHUB_ENV
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
         with:

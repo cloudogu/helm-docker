@@ -58,6 +58,6 @@ jobs:
           tags: ${{ env.TAGS }}
       - name: Check manifest
         run: |
-          echo ${env.GHCR_IMAGE}
-          echo ${env.VERSION}
+          echo ${{ env.GHCR_IMAGE }}
+          echo ${{ env.VERSION }}
           docker buildx imagetools inspect ${{ env.GHCR_IMAGE }}:${{ env.VERSION }}

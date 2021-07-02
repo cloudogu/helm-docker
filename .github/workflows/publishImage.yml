@@ -29,8 +29,7 @@ jobs:
           echo "IMAGE=ghcr.io/$GITHUB_REPOSITORY" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
           echo "GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
-
-          echo "${VERSION}"
+          echo "GIT_REF=$(echo $GITHUB_REF)" >> $GITHUB_ENV
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
         with:
@@ -43,10 +42,7 @@ jobs:
           fetch-depth: 2          
       - # this is necessary to prevent desynch state when triggered by previous workflow
         name: Sync git repository
-        run: |
-          git checkout HEAD^
-          echo "GIT_REF=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)" >> $GITHUB_ENV
-          echo $ {{ GIT_REF }}
+        run: git checkout HEAD^
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2

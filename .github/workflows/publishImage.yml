@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
+#        with:
+#          fetch-depth: 1
 #      - # this is necessary to prevent desynch state when triggered by previous workflow
 #        name: Sync git repository
 #        run: git checkout HEAD^

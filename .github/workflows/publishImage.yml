@@ -1,10 +1,10 @@
 name: Publish Docker image
 on:
-  push:
-    branches:
-      - 'bug/latest_commit'
+#  push:
+#    branches:
+#      - 'bug/latest_commit'
   release:
-    branch: main
+    branch: bug/latest_commit
     types: [published]
 jobs:
   push_to_registry:

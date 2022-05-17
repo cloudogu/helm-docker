@@ -9,12 +9,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 2          
-      - # this is necessary to prevent desynch state when triggered by previous workflow
-        name: Sync git repository
-        run: git checkout HEAD^
+        uses: actions/checkout@v3
       - name: Prepare
         id: prep
         run: |
@@ -37,7 +32,7 @@ jobs:
           echo "GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
           echo "GIT_REF=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)" >> $GITHUB_ENV
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}

@@ -16,8 +16,8 @@ jobs:
         id: compare_releases
         run: |
           eval $(scripts/checkHelmVersion.sh)
-          echo ::set-output name=triggerNewRelease::${triggerNewRelease}
-          echo ::set-output name=helmRelease::${helmRelease}
+          echo "triggerNewRelease=${triggerNewRelease}" | tee -a $GITHUB_OUTPUT
+          echo "helmRelease=${helmRelease}" | tee -a $GITHUB_OUTPUT
       - 
         uses: stefanzweifel/git-auto-commit-action@v4
         if: steps.compare_releases.outputs.triggerNewRelease == 'true'

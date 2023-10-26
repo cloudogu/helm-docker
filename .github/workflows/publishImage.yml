@@ -6,7 +6,7 @@ on:
 jobs:
   push_to_registry:
     name: Push Docker image to GitHub Packages
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -20,7 +20,8 @@ jobs:
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
-            TAGS="${TAGS},${GHCR_IMAGE}:${VERSION}"
+            MAJOR_VERSION=$(echo $VERSION | cut -d '.' -f 1 | tr -d 'v')
+            TAGS="${TAGS},${GHCR_IMAGE}:${VERSION},${GHCR_IMAGE}:${MAJOR_VERSION}"
           fi
 
           echo "VERSION=${VERSION}" >> $GITHUB_ENV

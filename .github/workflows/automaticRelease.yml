@@ -9,7 +9,7 @@ on:
 jobs:
   check_for_new_helm_version:
     name: Update on new release
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - 
         run: sudo apt-get install -y jq

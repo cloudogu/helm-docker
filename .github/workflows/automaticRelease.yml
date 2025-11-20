@@ -47,4 +47,11 @@ jobs:
             
             The image can be pulled with `$ docker pull ghcr.io/cloudogu/helm:${{ steps.compare_releases.outputs.helmRelease }}-1`
           draft: false
-          prerelease: false       
+          prerelease: false
+
+  notify_failure:
+    uses: ./.github/workflows/notify_failure.yml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      needs_job: check_for_new_helm_version

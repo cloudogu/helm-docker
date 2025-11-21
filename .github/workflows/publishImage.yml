@@ -55,8 +55,12 @@ jobs:
         run: docker buildx imagetools inspect ${{ env.GHCR_IMAGE }}:${{ env.VERSION }}
 
   notify_failure:
+    permissions:
+      issues: write
+      contents: read
+
     uses: ./.github/workflows/notify_failure.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    needs: [ push_to_registry ]
+    if: failure()
     with:
       needs_job: push_to_registry

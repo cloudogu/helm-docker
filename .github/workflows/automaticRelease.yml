@@ -50,8 +50,12 @@ jobs:
           prerelease: false
 
   notify_failure:
+    permissions:
+      issues: write
+      contents: read
+
     uses: ./.github/workflows/notify_failure.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    needs: [ check_for_new_helm_version ]
+    if: failure()
     with:
       needs_job: check_for_new_helm_version

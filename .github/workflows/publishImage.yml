@@ -53,3 +53,14 @@ jobs:
           tags: ${{ env.TAGS }}
       - name: Check manifest
         run: docker buildx imagetools inspect ${{ env.GHCR_IMAGE }}:${{ env.VERSION }}
+
+  notify_failure:
+    permissions:
+      issues: write
+      contents: read
+
+    uses: ./.github/workflows/notify_failure.yml
+    needs: [ push_to_registry ]
+    if: failure()
+    with:
+      needs_job: push_to_registry

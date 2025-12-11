@@ -1,0 +1,47 @@
+name: Notify Failure
+
+on:
+  workflow_call:
+    inputs:
+      needs_job:
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  notify_failure:
+    runs-on: ubuntu-latest
+    needs:
+      - ${{ inputs.needs_job }}
+    permissions:
+      issues: write
+      contents: read
+    if: failure()
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Manage issue
+        id: manage_issue
+        run: |
+          ISSUE_TITLE="[Workflow Log] Central error logging"
+          ISSUE_DATA=$(gh issue list -R "$GITHUB_REPOSITORY" --search "is:open in:title \"${ISSUE_TITLE}\"" --json number --limit 1)
+          ISSUE_NUMBER=$(echo "$ISSUE_DATA" | jq -r '.[0].number')
+          
+          if [ -z "$ISSUE_NUMBER" ] || [ "$ISSUE_NUMBER" = "null" ]; then
+            NEW_ISSUE_NUMBER=$(gh issue create -R "$GITHUB_REPOSITORY" --title "$ISSUE_TITLE" \
+                                               --body "This issue serves as a central log for all workflow errors." \
+                                                | sed -n 's/.*#\([0-9]\+\).*/\1/p')
+            echo "issue_number=$NEW_ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+          else              
+            echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+          fi                   
+
+      - name: Create comment
+        run: |
+          gh issue comment ${{ steps.manage_issue.outputs.issue_number }} \
+             -R "$GITHUB_REPOSITORY" \
+             --body "***Workflow failure*** ([View workflow run for details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}))"

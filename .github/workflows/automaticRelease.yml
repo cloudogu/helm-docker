@@ -57,4 +57,5 @@ jobs:
     uses: ./.github/workflows/notify_failure.yml
     needs: [ check_for_new_helm_version ]
     if: failure()
-    secrets: inherit
+    secrets:
+      GH_TOKEN: ${{ secrets.CR_PAT }}

@@ -62,4 +62,5 @@ jobs:
     uses: ./.github/workflows/notify_failure.yml
     needs: [ push_to_registry ]
     if: failure()
-    secrets: inherit
+    secrets:
+      GH_TOKEN: ${{ secrets.CR_PAT }}

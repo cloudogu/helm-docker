@@ -62,5 +62,4 @@ jobs:
     uses: ./.github/workflows/notify_failure.yml
     needs: [ push_to_registry ]
     if: failure()
-    with:
-      needs_job: push_to_registry
+    secrets: inherit

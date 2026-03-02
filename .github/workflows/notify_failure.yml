@@ -2,10 +2,6 @@ name: Notify Failure
 
 on:
   workflow_call:
-    inputs:
-      needs_job:
-        required: true
-        type: string
     secrets:
       GITHUB_TOKEN:
         required: true
@@ -13,12 +9,9 @@ on:
 jobs:
   notify_failure:
     runs-on: ubuntu-latest
-    needs:
-      - ${{ inputs.needs_job }}
     permissions:
       issues: write
       contents: read
-    if: failure()
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

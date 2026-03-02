@@ -57,5 +57,4 @@ jobs:
     uses: ./.github/workflows/notify_failure.yml
     needs: [ check_for_new_helm_version ]
     if: failure()
-    with:
-      needs_job: check_for_new_helm_version
+    secrets: inherit

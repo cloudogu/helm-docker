@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.15.7
+ARG ALPINE_VERSION=3.23.3
 FROM alpine:${ALPINE_VERSION} AS base
 
 FROM base AS builder
@@ -56,7 +56,6 @@ ENV HELM_CACHE_HOME="/helm/.cache/helm" \
     HELM_REGISTRY_CONFIG="/helm/.config/helm/registry.json" \
     HELM_REPOSITORY_CACHE="/helm/.cache/helm/repository" \
     HELM_REPOSITORY_CONFIG="/helm/.config/helm/repositories.yaml" \
-    # Make kubeval binary available on the PATH as well
     PATH="/helm/.local/share/helm/plugins/helm-kubeval/bin:$PATH"
  
 RUN apk add --update --no-cache ca-certificates curl git openssl bash

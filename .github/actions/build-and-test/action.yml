@@ -1,0 +1,37 @@
+name: 'Build and Test Helm Image'
+description: 'Builds the Docker image and runs validation tests on Helm and its plugins'
+runs:
+  using: "composite"
+  steps:
+    - name: Build image
+      shell: bash
+      run: docker build -t helm-docker-test .
+
+    - name: Test Helm version
+      shell: bash
+      run: docker run --rm helm-docker-test version
+
+    - name: Test Plugins Installation
+      shell: bash
+      run: docker run --rm helm-docker-test plugin list
+
+    - name: Create Test Chart
+      shell: bash
+      run: |
+        docker run --rm -v $(pwd):/apps -w /apps helm-docker-test create test-chart
+        echo "key1: value1" > val1.yaml
+        echo "key2: value2" > val2.yaml
+
+    - name: Test helm-values
+      shell: bash
+      run: |
+        docker run --rm -v $(pwd):/apps -w /apps helm-docker-test values -f val1.yaml -f val2.yaml ./test-chart | grep "key1: value1"
+        docker run --rm -v $(pwd):/apps -w /apps helm-docker-test values -f val1.yaml -f val2.yaml ./test-chart | grep "key2: value2"
+
+    - name: Test helm-kubeval
+      shell: bash
+      run: docker run --rm helm-docker-test kubeval --version
+
+    - name: Cleanup
+      shell: bash
+      run: sudo rm -rf test-chart val1.yaml val2.yaml

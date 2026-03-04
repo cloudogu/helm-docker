@@ -27,6 +27,11 @@ jobs:
         if: steps.compare_releases.outputs.triggerNewRelease == 'true'
         with:
           commit_message: Updated to latest Helm version v${{ steps.compare_releases.outputs.helmRelease }}
+      
+      - name: Build and Test Image
+        if: steps.compare_releases.outputs.triggerNewRelease == 'true'
+        uses: ./.github/actions/build-and-test
+
       -
         name: Create release on new Helm version
         if: steps.compare_releases.outputs.triggerNewRelease == 'true'

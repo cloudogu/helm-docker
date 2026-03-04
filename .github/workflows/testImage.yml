@@ -1,0 +1,26 @@
+name: Test Image
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build and Test Image
+        uses: ./.github/actions/build-and-test
+
+  notify_failure:
+    permissions:
+      issues: write
+      contents: read
+    if: failure() && github.event_name != 'pull_request'
+    needs: [ test-image ]
+    uses: ./.github/workflows/notify_failure.yml
+    secrets:
+      GH_TOKEN: ${{ secrets.CR_PAT }}

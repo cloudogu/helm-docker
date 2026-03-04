@@ -7,6 +7,7 @@ Containerized Kubernetes Helm client with support for plugins
 
 ```bash
 helm kubeval
+helm kubeconform
 helm values 
 ```
 

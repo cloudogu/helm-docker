@@ -32,10 +32,6 @@ runs:
       shell: bash
       run: docker run --rm helm-docker-test kubeval --version
 
-    - name: Test helm-kubeconform
-      shell: bash
-      run: docker run --rm helm-docker-test kubeconform --help
-
     - name: Cleanup
       shell: bash
       run: sudo rm -rf test-chart val1.yaml val2.yaml

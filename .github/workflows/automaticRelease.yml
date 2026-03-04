@@ -48,7 +48,6 @@ jobs:
 
             - [Helm](https://www.helm.sh):${{ steps.compare_releases.outputs.helmRelease }}
             - [Helm-kubeval](https://github.com/instrumenta/helm-kubeval):0.13.0
-            - [Helm-kubeconform](https://github.com/jtyr/kubeconform-helm):0.2.0
             - [Helm-values](https://github.com/shihyuho/helm-values):1.2.0
             
             The image can be pulled with `$ docker pull ghcr.io/cloudogu/helm:${{ steps.compare_releases.outputs.helmRelease }}-1`

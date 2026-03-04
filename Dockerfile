@@ -6,7 +6,6 @@ ARG HELM_VERSION=4.1.1
 # Kubeval does not have tags, so we use a commit
 ARG HELM_KUBEVAL_VERSION=7476464
 ARG HELM_VALUES_VERSION=1.2.0
-ARG HELM_KUBECONFORM_VERSION=v0.2.0
 
 # Make helm install everything in defined folder
 ENV HOME=/helm
@@ -31,9 +30,6 @@ RUN git clone -n https://github.com/instrumenta/helm-kubeval ${HOME}/.local/shar
     git checkout ${HELM_KUBEVAL_VERSION} && \
     HELM_PLUGIN_DIR=$(pwd) scripts/install.sh && \
     rm -rf .git
-
-# install helm-kubeconform
-RUN helm plugin install https://github.com/jtyr/kubeconform-helm --version ${HELM_KUBECONFORM_VERSION} || helm plugin install https://github.com/jtyr/kubeconform-helm --version ${HELM_KUBECONFORM_VERSION} --verify=false
 
 # install helm-values
 RUN git clone --depth 1 --branch ${HELM_VALUES_VERSION} https://github.com/shihyuho/helm-values /tmp/helm-values
@@ -61,9 +57,9 @@ ENV HELM_CACHE_HOME="/helm/.cache/helm" \
     HELM_REGISTRY_CONFIG="/helm/.config/helm/registry.json" \
     HELM_REPOSITORY_CACHE="/helm/.cache/helm/repository" \
     HELM_REPOSITORY_CONFIG="/helm/.config/helm/repositories.yaml" \
-    PATH="/helm/.local/share/helm/plugins/helm-kubeval/bin:/helm/.local/share/helm/plugins/kubeconform-helm/bin:$PATH"
+    PATH="/helm/.local/share/helm/plugins/helm-kubeval/bin:$PATH"
  
-RUN apk add --update --no-cache ca-certificates curl git openssl bash python3 py3-yaml
+RUN apk add --update --no-cache ca-certificates curl git openssl bash
 COPY --from=builder /dist /
 
 ENTRYPOINT ["helm"]
